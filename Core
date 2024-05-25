@@ -1,0 +1,43 @@
+#include <WiFi.h>
+#include <WebServer.h>
+
+const char* ssid = "your-ssid";
+const char* password = "your-password";
+
+WebServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  Serial2.begin(115200, SERIAL_8N1, 16, 17); // Serial2 for communication with ESP32-CAM
+
+  pinMode(4, OUTPUT); // Control pin for ESP32-CAM power
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/", handleRoot);
+  server.begin();
+  Serial.println("HTTP server started.");
+}
+
+void loop() {
+  server.handleClient();
+}
+
+void handleRoot() {
+  // Your object detection algorithm here
+  // You can communicate with ESP32-CAM through Serial2
+  // Example:
+  Serial2.println("CaptureImage"); // Command to ESP32-CAM to capture image
+  delay(1000); // Wait for image capture
+  Serial2.println("GetObject"); // Command to ESP32-CAM to perform object detection
+  // Receive and process object detection result from ESP32-CAM
+  server.send(200, "text/plain", "Object Detected: [Object Name]");
+}
