@@ -1,0 +1,20 @@
+#include <Arduino.h>
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(4, OUTPUT); // Control pin for ESP32-CAM power
+  digitalWrite(4, HIGH); // Power on ESP32-CAM
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    String command = Serial.readStringUntil('\n');
+    if (command == "CaptureImage") {
+      // Capture image code here
+    } else if (command == "GetObject") {
+      // Object detection code here
+      // After detecting object
+      Serial.println("ObjectName"); // Replace ObjectName with actual detected object name
+    }
+  }
+}
